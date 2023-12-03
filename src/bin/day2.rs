@@ -38,29 +38,24 @@ fn parse(input: &str) -> Vec<Vec<CubeSet>> {
 }
 
 fn part1(input: &str) -> u32 {
-    let games = parse(input);
-    let mut sum = 0;
-    'game: for (game, id) in games.iter().zip(1..) {
-        for set in game {
-            if set.red > 12 || set.green > 13 || set.blue > 14 {
-                continue 'game;
-            }
-        }
-        sum += id;
-    }
-
-    sum
+    parse(input)
+        .iter()
+        .zip(1..)
+        .filter_map(|(game, id)| {
+            game.iter()
+                .all(|set| set.red <= 12 && set.green <= 13 && set.blue <= 14)
+                .then_some(id)
+        })
+        .sum()
 }
 
 fn part2(input: &str) -> u32 {
-    let games = parse(input);
-    let mut sum = 0;
-    for game in games {
-        let min_red = game.iter().map(|set| set.red).max().unwrap();
-        let min_green = game.iter().map(|set| set.green).max().unwrap();
-        let min_blue = game.iter().map(|set| set.blue).max().unwrap();
-        sum += min_red * min_green * min_blue;
-    }
-
-    sum
+    parse(input)
+        .iter()
+        .map(|game| {
+            game.iter().map(|set| set.red).max().unwrap()
+                * game.iter().map(|set| set.green).max().unwrap()
+                * game.iter().map(|set| set.blue).max().unwrap()
+        })
+        .sum()
 }
