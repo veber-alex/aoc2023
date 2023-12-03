@@ -15,12 +15,12 @@ struct CubeSet {
 fn parse(input: &str) -> Vec<Vec<CubeSet>> {
     let mut games = vec![];
     for line in input.lines() {
-        let (_, data) = line.split_once(":").unwrap();
+        let (_, data) = line.split_once(':').unwrap();
         let mut game = vec![];
-        for set in data.split(";") {
+        for set in data.split(';') {
             let mut cube_set = CubeSet::default();
-            for color in set.split(",") {
-                let (n, name) = color.trim().split_once(" ").unwrap();
+            for color in set.split(',') {
+                let (n, name) = color.trim().split_once(' ').unwrap();
                 let n = n.parse().unwrap();
                 match name {
                     "red" => cube_set.red = n,
