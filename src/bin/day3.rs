@@ -1,4 +1,7 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{
+    hash_map::Entry::{Occupied, Vacant},
+    BTreeMap, HashMap,
+};
 
 fn main() {
     let input = include_str!("../../input/day3.txt");
@@ -45,7 +48,7 @@ fn look_around(map: &BTreeMap<Pos, char>, pos: Pos) -> Option<(Pos, char)> {
     ]
     .iter()
     .filter_map(|pos| map.get_key_value(pos).map(|(k, v)| (*k, *v)))
-    .find(|(_, c)| !matches!(c, '.' | '0'..='9'))
+    .find(|(_, sym)| !matches!(sym, '.' | '0'..='9'))
 }
 
 fn part1(input: &str) -> u32 {
@@ -82,15 +85,18 @@ fn part2(input: &str) -> u32 {
         if c.is_ascii_digit() {
             buf.push(c);
             if let Some((p, '*')) = look_around(&map, pos) {
-                star_pos = star_pos.or(Some(p));
+                star_pos = Some(p);
             }
         } else if !buf.is_empty() {
             if let Some(p) = star_pos {
                 let number: u32 = buf.parse().unwrap();
-                if let Some(n) = count.get(&p) {
-                    sum += number * n
-                } else {
-                    count.insert(p, number);
+                match count.entry(p) {
+                    Occupied(entry) => {
+                        sum += number * entry.get();
+                    }
+                    Vacant(entry) => {
+                        entry.insert(number);
+                    }
                 }
                 star_pos = None;
             }
