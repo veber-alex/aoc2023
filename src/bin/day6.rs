@@ -17,14 +17,14 @@ fn part1(input: &str) -> u64 {
     let (time, distance) = input.split_once('\n').unwrap();
     let times = time.split_once(':').unwrap().1.split_ascii_whitespace();
     let distances = distance.split_once(':').unwrap().1.split_ascii_whitespace();
-    let races = zip(times, distances)
+    let races: Vec<Race> = zip(times, distances)
         .map(|(t, z)| Race {
             time: t.parse().unwrap(),
             distance_record: z.parse().unwrap(),
         })
         .collect();
 
-    solve(races)
+    solve(&races)
 }
 
 fn part2(input: &str) -> u64 {
@@ -47,10 +47,10 @@ fn part2(input: &str) -> u64 {
         distance_record: distances.parse().unwrap(),
     };
 
-    solve(vec![race])
+    solve(&[race])
 }
 
-fn solve(races: Vec<Race>) -> u64 {
+fn solve(races: &[Race]) -> u64 {
     let mut res = 1;
     for race in races {
         let mut win_ways = 0;
