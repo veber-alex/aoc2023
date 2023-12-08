@@ -6,12 +6,11 @@ fn main() {
 }
 
 fn part1(input: &str) -> u32 {
-    let find = |b: &u8| matches!(b, b'1'..=b'9');
     input
         .lines()
         .map(|line| {
-            let first = line.bytes().find(find).unwrap() as u32;
-            let last = line.bytes().rev().find(find).unwrap() as u32;
+            let first = line.bytes().find(u8::is_ascii_digit).unwrap() as u32;
+            let last = line.bytes().rev().find(u8::is_ascii_digit).unwrap() as u32;
             (first - 48) * 10 + (last - 48)
         })
         .sum()
@@ -33,24 +32,24 @@ const MAP: &[(char, &str)] = &[
     ('9', "nine"),
 ];
 
-fn scan_line(mut line: &str) -> u32 {
-    let first = 'out: loop {
-        for ((num, name), idx) in MAP.iter().copied().zip(1..) {
-            if line.starts_with(num) || line.starts_with(name) {
-                break 'out idx;
+fn scan_line(line: &str) -> u32 {
+    let mut min_index = line.len();
+    let mut min_value = 0;
+    let mut max_index = 0;
+    let mut max_value = 0;
+
+    for ((num, name), idx) in MAP.iter().copied().zip(1..) {
+        for (pos, _) in line.match_indices(num).chain(line.match_indices(name)) {
+            if pos < min_index {
+                min_index = pos;
+                min_value = idx;
+            }
+            if pos >= max_index {
+                max_index = pos;
+                max_value = idx;
             }
         }
-        line = &line[1..];
-    };
+    }
 
-    let last = 'out: loop {
-        for ((num, name), idx) in MAP.iter().copied().zip(1..) {
-            if line.ends_with(num) || line.ends_with(name) {
-                break 'out idx;
-            }
-        }
-        line = &line[..line.len() - 1];
-    };
-
-    first * 10 + last
+    min_value * 10 + max_value
 }
